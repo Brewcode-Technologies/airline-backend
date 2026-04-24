@@ -41,16 +41,6 @@ Server runs on **http://localhost:5000**
 
 ---
 
-## Login Credentials (after seed)
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@airline.com | password123 |
-| Airline | manager@airline.com | password123 |
-| Driver | ravi@driver.com | password123 |
-
----
-
 ## Scripts
 
 | Command | Description |
