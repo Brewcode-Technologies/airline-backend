@@ -1,5 +1,6 @@
 const authService = require('./auth.service');
 const { success } = require('../../utils/response');
+const { signToken } = require('../../utils/jwt');
 
 const register = async (req, res, next) => {
   try { res.status(201).json({ success: true, data: await authService.register(req.body) }); }
@@ -20,4 +21,17 @@ const logout = (req, res) => {
   res.status(200).json({ success: true, message: 'Logged out successfully' });
 };
 
-module.exports = { register, login, me, logout };
+const googleCallback = (req, res) => {
+  const user = req.user;
+  const token = signToken({ id: user._id, role: user.role });
+  const params = new URLSearchParams({
+    token,
+    id:   user._id.toString(),
+    name: user.name,
+    role: user.role,
+    email: user.email,
+  });
+  res.redirect(`${process.env.FRONTEND_URL}/auth/callback?${params}`);
+};
+
+module.exports = { register, login, me, logout, googleCallback };

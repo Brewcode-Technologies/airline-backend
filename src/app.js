@@ -1,10 +1,13 @@
+require('dotenv').config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' });
 const express = require('express');
 const cors = require('cors');
+const passport = require('./config/passport');
 const errorMiddleware = require('./middleware/error.middleware');
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
+app.use(passport.initialize());
 
 app.use('/api/auth', require('./modules/auth/auth.routes'));
 app.use('/api/users', require('./modules/users/user.routes'));

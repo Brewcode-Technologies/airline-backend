@@ -19,7 +19,9 @@
     "express": "^5.2.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^9.5.0"
+    "mongoose": "^9.5.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
