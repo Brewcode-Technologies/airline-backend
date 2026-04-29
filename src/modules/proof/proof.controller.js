@@ -2,7 +2,6 @@ const proofService = require('./proof.service');
 const Order = require('../../models/Order');
 const { success } = require('../../utils/response');
 
-// handles both GET /proof/:orderId and GET /orders/:id/proof
 const getProof = async (req, res, next) => {
   try {
     const orderId = req.params.orderId || req.params.id;
@@ -10,7 +9,6 @@ const getProof = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-// handles both POST /proof and POST /orders/:id/proof
 const submitProof = async (req, res, next) => {
   try {
     const orderId = req.params.id;
@@ -18,7 +16,18 @@ const submitProof = async (req, res, next) => {
       const order = await Order.findById(orderId);
       if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
     }
-    const data = orderId ? { ...req.body, order: orderId } : req.body;
+
+    // if a file was uploaded, build the public URL
+    let imageUrl = req.body.imageUrl || '';
+    if (req.file) {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    }
+
+    const data = orderId
+      ? { ...req.body, imageUrl, order: orderId }
+      : { ...req.body, imageUrl };
+
     res.status(201).json({ success: true, data: await proofService.create(data) });
   } catch (e) { next(e); }
 };

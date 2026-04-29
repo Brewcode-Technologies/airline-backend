@@ -14,7 +14,9 @@
     { "key": "skuCode", "value": "" },
     { "key": "orderId", "value": "" },
     { "key": "orderNumber", "value": "" },
-    { "key": "driverId", "value": "" }
+    { "key": "driverId", "value": "" },
+    { "key": "coupaBuyerCookie", "value": "" },
+    { "key": "coupaSharedSecret", "value": "airline-logistics-secret-2025" }
   ],
   "item": [
     {
@@ -792,6 +794,84 @@
             "method": "GET",
             "url": "{{baseUrl}}/analytics/orders-by-status",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupa PunchOut",
+      "item": [
+        {
+          "name": "1. PunchOutSetupRequest (Coupa → us)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is XML', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('xml'));",
+                  "pm.test('Contains StartPage URL', () => pm.expect(pm.response.text()).to.include('StartPage'));",
+                  "const match = pm.response.text().match(/session=([^&'\"<]+)/);",
+                  "if (match) pm.collectionVariables.set('coupaBuyerCookie', decodeURIComponent(match[1]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/coupa/punchout/setup",
+            "header": [{ "key": "Content-Type", "value": "text/xml" }],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cXML payloadID=\"test-001@coupa\" timestamp=\"2025-01-01T00:00:00Z\">\n  <Header>\n    <From>\n      <Credential domain=\"NetworkID\">\n        <Identity>coupa-test-buyer</Identity>\n      </Credential>\n    </From>\n    <To>\n      <Credential domain=\"NetworkID\">\n        <Identity>airline-logistics</Identity>\n      </Credential>\n    </To>\n    <Sender>\n      <Credential domain=\"NetworkID\">\n        <Identity>coupa-test-buyer</Identity>\n        <SharedSecret>airline-logistics-secret-2025</SharedSecret>\n      </Credential>\n      <UserAgent>Coupa/21.0</UserAgent>\n    </Sender>\n  </Header>\n  <Request deploymentMode=\"production\">\n    <PunchOutSetupRequest operation=\"create\">\n      <BuyerCookie>TEST-COOKIE-ABC123</BuyerCookie>\n      <BrowserFormPost>\n        <URL>http://localhost:5000/api/coupa/punchout/return-test</URL>\n      </BrowserFormPost>\n    </PunchOutSetupRequest>\n  </Request>\n</cXML>"
+            }
+          }
+        },
+        {
+          "name": "2. Return Cart to Coupa (us → Coupa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Cart returned', () => pm.expect(pm.response.json().success).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/coupa/punchout/return",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"buyerCookie\": \"TEST-COOKIE-ABC123\",\n  \"items\": [\n    { \"skuId\": \"{{skuId}}\", \"quantity\": 2 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "3. OrderRequest / PO (Coupa → us)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is XML', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('xml'));",
+                  "pm.test('Status code 200 in cXML', () => pm.expect(pm.response.text()).to.include('200'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/coupa/order",
+            "header": [{ "key": "Content-Type", "value": "text/xml" }],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cXML payloadID=\"po-001@coupa\" timestamp=\"2025-01-01T00:01:00Z\">\n  <Header>\n    <From>\n      <Credential domain=\"NetworkID\">\n        <Identity>coupa-test-buyer</Identity>\n      </Credential>\n    </From>\n    <To>\n      <Credential domain=\"NetworkID\">\n        <Identity>airline-logistics</Identity>\n      </Credential>\n    </To>\n    <Sender>\n      <Credential domain=\"NetworkID\">\n        <Identity>coupa-test-buyer</Identity>\n        <SharedSecret>airline-logistics-secret-2025</SharedSecret>\n      </Credential>\n      <UserAgent>Coupa/21.0</UserAgent>\n    </Sender>\n  </Header>\n  <Request deploymentMode=\"production\">\n    <OrderRequest>\n      <OrderRequestHeader orderID=\"COUPA-PO-001\" orderDate=\"2025-01-01\" type=\"new\">\n        <Total>\n          <Money currency=\"USD\">18.00</Money>\n        </Total>\n        <ShipTo>\n          <Address>\n            <Name xml:lang=\"en\">Gate B4 — JFK</Name>\n          </Address>\n        </ShipTo>\n      </OrderRequestHeader>\n      <ItemOut quantity=\"2\" lineNumber=\"1\">\n        <ItemID>\n          <SupplierPartID>W-24</SupplierPartID>\n        </ItemID>\n        <ItemDetail>\n          <UnitPrice><Money currency=\"USD\">9.00</Money></UnitPrice>\n          <Description xml:lang=\"en\">Bottled Water Case</Description>\n          <UnitOfMeasure>EA</UnitOfMeasure>\n        </ItemDetail>\n      </ItemOut>\n    </OrderRequest>\n  </Request>\n</cXML>"
+            }
           }
         }
       ]

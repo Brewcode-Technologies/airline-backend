@@ -3,6 +3,7 @@ const { getOrders, getOrder, createOrder, updateOrder, deleteOrder, assignDriver
 const { getProof, submitProof } = require('../proof/proof.controller');
 const authMiddleware = require('../../middleware/auth.middleware');
 const roleMiddleware = require('../../middleware/role.middleware');
+const upload = require('../../config/upload');
 
 router.use(authMiddleware);
 router.get('/', getOrders);
@@ -15,7 +16,7 @@ router.put('/:id/status', roleMiddleware('admin', 'airline'), updateStatus);
 router.put('/:id/picked', roleMiddleware('admin', 'airline', 'driver'), setPicked);
 router.put('/:id/enroute', roleMiddleware('admin', 'airline', 'driver'), setEnroute);
 router.put('/:id/delivered', roleMiddleware('admin', 'airline', 'driver'), setDelivered);
-router.post('/:id/proof', submitProof);
+router.post('/:id/proof', upload.single('photo'), submitProof);
 router.get('/:id/proof', getProof);
 
 module.exports = router;

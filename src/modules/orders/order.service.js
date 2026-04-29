@@ -6,6 +6,7 @@ const create = async (data) => {
   if (!data.orderNumber) throw Object.assign(new Error('orderNumber is required'), { statusCode: 400 });
   const existing = await Order.findOne({ orderNumber: data.orderNumber });
   if (existing) throw Object.assign(new Error(`Order number '${data.orderNumber}' already exists`), { statusCode: 409 });
+  if (!data.slaDeadline) data.slaDeadline = new Date(Date.now() + 22 * 60 * 1000);
   return Order.create(data);
 };
 const update = (id, data) => Order.findByIdAndUpdate(id, data, { new: true });

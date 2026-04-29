@@ -12,9 +12,23 @@ const login = async (req, res, next) => {
   catch (e) { next(e); }
 };
 
+const User = require('../../models/User');
+
 const me = async (req, res, next) => {
   try { success(res, await authService.me(req.user.id)); }
   catch (e) { next(e); }
+};
+
+const updateMe = async (req, res, next) => {
+  try {
+    const { airport, gate, name } = req.body;
+    const updated = await User.findByIdAndUpdate(
+      req.user.id,
+      { ...(name && { name }), ...(airport !== undefined && { airport }), ...(gate !== undefined && { gate }) },
+      { new: true }
+    ).select('-password');
+    success(res, updated);
+  } catch (e) { next(e); }
 };
 
 const logout = (req, res) => {
@@ -34,4 +48,4 @@ const googleCallback = (req, res) => {
   res.redirect(`${process.env.FRONTEND_URL}/auth/callback?${params}`);
 };
 
-module.exports = { register, login, me, logout, googleCallback };
+module.exports = { register, login, me, updateMe, logout, googleCallback };

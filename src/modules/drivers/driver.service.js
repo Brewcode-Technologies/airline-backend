@@ -1,7 +1,7 @@
 const Driver = require('../../models/Driver');
 
-const getAll = () => Driver.find().populate('user', 'name email');
-const getById = (id) => Driver.findById(id).populate('user', 'name email');
+const getAll = () => Driver.find().populate('user', 'name email _id');
+const getById = (id) => Driver.findById(id).populate('user', 'name email _id');
 const create = (data) => Driver.create(data);
 const update = async (id, data) => {
   const driver = await Driver.findByIdAndUpdate(id, data, { new: true });
