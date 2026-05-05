@@ -11,5 +11,6 @@ const updateStatus = async (req, res, next) => { try { success(res, await orderS
 const setPicked = async (req, res, next) => { try { success(res, await orderService.updateStatus(req.params.id, 'picked')); } catch (e) { next(e); } };
 const setEnroute = async (req, res, next) => { try { success(res, await orderService.updateStatus(req.params.id, 'enroute')); } catch (e) { next(e); } };
 const setDelivered = async (req, res, next) => { try { success(res, await orderService.updateStatus(req.params.id, 'delivered')); } catch (e) { next(e); } };
+const verifyOtp = async (req, res, next) => { try { success(res, await orderService.verifyOtp(req.params.id, req.body.otp)); } catch (e) { next(e); } };
 
-module.exports = { getOrders, getOrder, createOrder, updateOrder, deleteOrder, assignDriver, updateStatus, setPicked, setEnroute, setDelivered };
+module.exports = { getOrders, getOrder, createOrder, updateOrder, deleteOrder, assignDriver, updateStatus, setPicked, setEnroute, setDelivered, verifyOtp };

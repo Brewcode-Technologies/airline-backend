@@ -2,14 +2,17 @@ const User = require('../../models/User');
 const { hashPassword, comparePassword } = require('../../utils/hash');
 const { signToken } = require('../../utils/jwt');
 
-const register = async ({ name, email, password, role }) => {
+const register = async ({ name, email, password, role }, requestingUser) => {
   if (!name) throw Object.assign(new Error('Name is required'), { statusCode: 400 });
   if (!email) throw Object.assign(new Error('Email is required'), { statusCode: 400 });
   if (!password) throw Object.assign(new Error('Password is required'), { statusCode: 400 });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw Object.assign(new Error('Invalid email format'), { statusCode: 400 });
   if (password.length < 6) throw Object.assign(new Error('Password must be at least 6 characters'), { statusCode: 400 });
-  const validRoles = ['admin', 'airline', 'driver'];
+  const validRoles = ['admin', 'airline', 'driver', 'vendor'];
   if (role && !validRoles.includes(role)) throw Object.assign(new Error('Invalid role'), { statusCode: 400 });
+  // Only admin can create any account (driver, airline, vendor, or another admin)
+  if (['driver', 'airline', 'vendor', 'admin'].includes(role) && requestingUser?.role !== 'admin')
+    throw Object.assign(new Error('Account creation is restricted to admins only'), { statusCode: 403 });
   const existing = await User.findOne({ email });
   if (existing) throw Object.assign(new Error('Email already in use'), { statusCode: 409 });
   const hashed = await hashPassword(password);

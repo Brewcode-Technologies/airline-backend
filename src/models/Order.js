@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema({
   gate: { type: String },
   passengerCount: { type: Number },
   slaDeadline: { type: Date },
+  deliveryOtp: { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

@@ -4,6 +4,7 @@ const skuSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: { type: String },
+  category: { type: String, default: 'General' },
   vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
   unit: { type: String },
   price: { type: Number, default: 0 },

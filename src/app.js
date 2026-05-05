@@ -6,7 +6,7 @@ const passport = require('./config/passport');
 const errorMiddleware = require('./middleware/error.middleware');
 
 const app = express();
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: '*', credentials: false }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(passport.initialize());
@@ -14,6 +14,7 @@ app.use(passport.initialize());
 app.use('/api/auth', require('./modules/auth/auth.routes'));
 app.use('/api/users', require('./modules/users/user.routes'));
 app.use('/api/vendors', require('./modules/vendors/vendor.routes'));
+app.use('/api/categories', require('./modules/categories/category.routes'));
 app.use('/api/skus', require('./modules/skus/sku.routes'));
 app.use('/api/orders', require('./modules/orders/order.routes'));
 app.use('/api/drivers', require('./modules/drivers/driver.routes'));

@@ -3,7 +3,7 @@ const { success } = require('../../utils/response');
 const { signToken } = require('../../utils/jwt');
 
 const register = async (req, res, next) => {
-  try { res.status(201).json({ success: true, data: await authService.register(req.body) }); }
+  try { res.status(201).json({ success: true, data: await authService.register(req.body, req.user) }); }
   catch (e) { next(e); }
 };
 
@@ -48,4 +48,21 @@ const googleCallback = (req, res) => {
   res.redirect(`${process.env.FRONTEND_URL}/auth/callback?${params}`);
 };
 
-module.exports = { register, login, me, updateMe, logout, googleCallback };
+const { hashPassword, comparePassword } = require('../../utils/hash');
+
+const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6)
+      return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    const valid = await comparePassword(currentPassword, user.password);
+    if (!valid) return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+    user.password = await hashPassword(newPassword);
+    await user.save();
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (e) { next(e); }
+};
+
+module.exports = { register, login, me, updateMe, logout, googleCallback, changePassword };
