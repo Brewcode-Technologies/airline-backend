@@ -1,9 +1,22 @@
 const driverService = require('./driver.service');
 const User = require('../../models/User');
+const Driver = require('../../models/Driver');
 const { hashPassword } = require('../../utils/hash');
 const { success } = require('../../utils/response');
 
-const getDrivers = async (req, res, next) => { try { success(res, await driverService.getAll()); } catch (e) { next(e); } };
+const getDrivers = async (req, res, next) => {
+  try {
+    // Sync: find driver-role users without a linked Driver doc and create one
+    const driverUsers = await User.find({ role: 'driver' });
+    for (const u of driverUsers) {
+      const exists = await Driver.findOne({ user: u._id });
+      if (!exists) {
+        await Driver.create({ user: u._id, licenseNumber: '', vehicle: '', isAvailable: true });
+      }
+    }
+    success(res, await driverService.getAll());
+  } catch (e) { next(e); }
+};
 const getDriver = async (req, res, next) => { try { success(res, await driverService.getById(req.params.id)); } catch (e) { next(e); } };
 
 const createDriver = async (req, res, next) => {

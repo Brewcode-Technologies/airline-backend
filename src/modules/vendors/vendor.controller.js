@@ -1,10 +1,31 @@
 const vendorService = require('./vendor.service');
+const Vendor = require('../../models/Vendor');
 const Order = require('../../models/Order');
 const User = require('../../models/User');
 const { hashPassword } = require('../../utils/hash');
 const { success } = require('../../utils/response');
 
-const getVendors  = async (req, res, next) => { try { success(res, await vendorService.getAll()); } catch (e) { next(e); } };
+const getVendors  = async (req, res, next) => {
+  try {
+    // Sync: find all vendor-role users and ensure they have a valid linked Vendor doc
+    const vendorUsers = await User.find({ role: 'vendor' });
+    for (const u of vendorUsers) {
+      if (u.vendor) {
+        const exists = await Vendor.findById(u.vendor);
+        if (exists) continue; // already linked properly
+      }
+      // No vendor link or vendor doc was deleted — create/link one
+      const existing = await Vendor.findOne({ email: u.email });
+      if (existing) {
+        await User.findByIdAndUpdate(u._id, { vendor: existing._id });
+      } else {
+        const v = await Vendor.create({ name: u.name, email: u.email, isActive: true });
+        await User.findByIdAndUpdate(u._id, { vendor: v._id });
+      }
+    }
+    success(res, await vendorService.getAll());
+  } catch (e) { next(e); }
+};
 const getVendor   = async (req, res, next) => { try { success(res, await vendorService.getById(req.params.id)); } catch (e) { next(e); } };
 
 const createVendor = async (req, res, next) => {

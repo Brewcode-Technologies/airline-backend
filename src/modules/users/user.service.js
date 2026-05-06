@@ -5,7 +5,7 @@ const { hashPassword } = require('../../utils/hash');
 
 const getAll = () => User.find().select('-password');
 const getById = (id) => User.findById(id).select('-password');
-const create = async ({ name, email, password, role, licenseNumber, vehicle }) => {
+const create = async ({ name, email, password, role, licenseNumber, vehicle, contact, address }) => {
   if (!name) throw Object.assign(new Error('Name is required'), { statusCode: 400 });
   if (!email) throw Object.assign(new Error('Email is required'), { statusCode: 400 });
   if (!password) throw Object.assign(new Error('Password is required'), { statusCode: 400 });
@@ -20,7 +20,7 @@ const create = async ({ name, email, password, role, licenseNumber, vehicle }) =
 
   // Auto-create linked Vendor document
   if (role === 'vendor') {
-    const vendor = await Vendor.create({ name, email, isActive: true });
+    const vendor = await Vendor.create({ name, email, contact: contact || '', address: address || '', isActive: true });
     await User.findByIdAndUpdate(user._id, { vendor: vendor._id });
   }
 
