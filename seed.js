@@ -35,11 +35,11 @@ const seed = async () => {
     { name: 'Super Admin',          email: 'admin@airline.com',       password: hashedPassword, role: 'admin' },
     { name: 'Airline Manager',      email: 'manager@airline.com',     password: hashedPassword, role: 'airline' },
     { name: 'Airline Staff',        email: 'staff@airline.com',       password: hashedPassword, role: 'airline' },
-    { name: 'Ravi Kumar',           email: 'ravi@driver.com',         password: hashedPassword, role: 'driver' },
-    { name: 'Suresh Babu',          email: 'suresh@driver.com',       password: hashedPassword, role: 'driver' },
-    { name: 'Mahesh Reddy',         email: 'mahesh@driver.com',       password: hashedPassword, role: 'driver' },
-    { name: 'Priya Sharma',         email: 'priya@driver.com',        password: hashedPassword, role: 'driver' },
-    { name: 'Kiran Naidu',          email: 'kiran@driver.com',        password: hashedPassword, role: 'driver' },
+    { name: 'James Wilson',          email: 'james@driver.com',        password: hashedPassword, role: 'driver' },
+    { name: 'Mike Thompson',        email: 'mike@driver.com',         password: hashedPassword, role: 'driver' },
+    { name: 'Sarah Johnson',        email: 'sarah@driver.com',        password: hashedPassword, role: 'driver' },
+    { name: 'David Martinez',       email: 'david@driver.com',        password: hashedPassword, role: 'driver' },
+    { name: 'Chris Anderson',       email: 'chris@driver.com',        password: hashedPassword, role: 'driver' },
   ]);
   console.log(`✅ Users seeded: ${users.length}`);
 
@@ -106,11 +106,11 @@ const seed = async () => {
   // ─── 4. DRIVERS ─────────────────────────────────────────────
   const driverUsers = users.filter(u => u.role === 'driver');
   const drivers = await Driver.insertMany([
-    { user: driverUsers[0]._id, licenseNumber: 'DL-AP-2019-001234', vehicle: 'Tata Ace Truck',      isAvailable: true },
-    { user: driverUsers[1]._id, licenseNumber: 'DL-TS-2020-005678', vehicle: 'Mahindra Bolero',     isAvailable: true },
-    { user: driverUsers[2]._id, licenseNumber: 'DL-MH-2018-009012', vehicle: 'Ashok Leyland Truck', isAvailable: false },
-    { user: driverUsers[3]._id, licenseNumber: 'DL-KA-2021-003456', vehicle: 'Force Traveller Van', isAvailable: true },
-    { user: driverUsers[4]._id, licenseNumber: 'DL-TN-2017-007890', vehicle: 'Tata 407 Mini Truck', isAvailable: false },
+    { user: driverUsers[0]._id, licenseNumber: 'CDL-TX-2019-78234', vehicle: 'Ford F-150 Cargo',     isAvailable: true },
+    { user: driverUsers[1]._id, licenseNumber: 'CDL-CA-2020-45678', vehicle: 'Chevy Express Van',    isAvailable: true },
+    { user: driverUsers[2]._id, licenseNumber: 'CDL-NY-2018-90123', vehicle: 'RAM ProMaster 3500',   isAvailable: false },
+    { user: driverUsers[3]._id, licenseNumber: 'CDL-FL-2021-34567', vehicle: 'Ford Transit Cargo',   isAvailable: true },
+    { user: driverUsers[4]._id, licenseNumber: 'CDL-IL-2017-67890', vehicle: 'GMC Savana Cutaway',   isAvailable: false },
   ]);
   console.log(`✅ Drivers seeded: ${drivers.length}`);
 
@@ -279,7 +279,7 @@ const seed = async () => {
   console.log('\n🔑 Login credentials (all passwords: password123)');
   console.log('   Admin   : admin@airline.com');
   console.log('   Airline : manager@airline.com');
-  console.log('   Driver  : ravi@driver.com');
+  console.log('   Driver  : james@driver.com');
   console.log('   Vendor  : vendor1@indigo.com');
   console.log('   Vendor  : vendor2@airindia.com');
   console.log('   Vendor  : vendor3@spicejet.com');
