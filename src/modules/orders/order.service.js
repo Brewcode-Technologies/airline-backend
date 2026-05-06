@@ -1,6 +1,9 @@
 const Order = require('../../models/Order');
 
-const getAll = () => Order.find().populate('vendor').populate({ path: 'driver', populate: { path: 'user', select: 'name email' } });
+const getAll = (user) => {
+  const filter = user && user.role === 'airline' ? { createdBy: user.id } : {};
+  return Order.find(filter).populate('vendor').populate({ path: 'driver', populate: { path: 'user', select: 'name email' } });
+};
 const getById = (id) => Order.findById(id).populate('vendor').populate({ path: 'driver', populate: { path: 'user', select: 'name email' } }).populate('items.sku');
 const create = async (data) => {
   if (!data.orderNumber) throw Object.assign(new Error('orderNumber is required'), { statusCode: 400 });

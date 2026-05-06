@@ -116,11 +116,14 @@ const seed = async () => {
 
   // ─── 5. ORDERS ──────────────────────────────────────────────
   const now = new Date();
+  const airlineUser = users.find(u => u.email === 'manager@airline.com');
+  const staffUser = users.find(u => u.email === 'staff@airline.com');
   const orders = await Order.insertMany([
     {
       orderNumber:    'ORD-2025-0001',
       vendor:         vendors[0]._id,
       driver:         drivers[0]._id,
+      createdBy:      airlineUser._id,
       flightNumber:   'AI-101',
       gate:           'Gate A1',
       passengerCount: 180,
@@ -133,6 +136,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0002',
       vendor:         vendors[1]._id,
       driver:         drivers[1]._id,
+      createdBy:      airlineUser._id,
       flightNumber:   '6E-202',
       gate:           'Gate B3',
       passengerCount: 220,
@@ -145,6 +149,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0003',
       vendor:         vendors[2]._id,
       driver:         drivers[2]._id,
+      createdBy:      staffUser._id,
       flightNumber:   'SG-303',
       gate:           'Gate C5',
       passengerCount: 160,
@@ -157,6 +162,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0004',
       vendor:         vendors[3]._id,
       driver:         drivers[3]._id,
+      createdBy:      staffUser._id,
       flightNumber:   'UK-404',
       gate:           'Gate D2',
       passengerCount: 140,
@@ -169,6 +175,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0005',
       vendor:         vendors[0]._id,
       driver:         null,
+      createdBy:      airlineUser._id,
       flightNumber:   'AI-505',
       gate:           'Gate A4',
       passengerCount: 200,
@@ -181,6 +188,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0006',
       vendor:         vendors[1]._id,
       driver:         drivers[0]._id,
+      createdBy:      airlineUser._id,
       flightNumber:   '6E-606',
       gate:           'Gate B7',
       passengerCount: 190,
@@ -193,6 +201,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0007',
       vendor:         vendors[2]._id,
       driver:         null,
+      createdBy:      staffUser._id,
       flightNumber:   'SG-707',
       gate:           'Gate C1',
       passengerCount: 130,
@@ -205,6 +214,7 @@ const seed = async () => {
       orderNumber:    'ORD-2025-0008',
       vendor:         vendors[3]._id,
       driver:         drivers[1]._id,
+      createdBy:      staffUser._id,
       flightNumber:   'UK-808',
       gate:           'Gate D6',
       passengerCount: 175,

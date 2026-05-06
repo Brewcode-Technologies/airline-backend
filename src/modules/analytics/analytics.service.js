@@ -1,28 +1,42 @@
 const Order = require('../../models/Order');
 const Driver = require('../../models/Driver');
+const mongoose = require('mongoose');
 
-const getSummary = async () => {
+const getFilter = (user) => {
+  if (user && user.role === 'airline') {
+    return { createdBy: new mongoose.Types.ObjectId(user.id) };
+  }
+  return {};
+};
+
+const getSummary = async (user) => {
+  const filter = getFilter(user);
   const [totalOrders, delivered, drivers] = await Promise.all([
-    Order.countDocuments(),
-    Order.countDocuments({ status: 'delivered' }),
+    Order.countDocuments(filter),
+    Order.countDocuments({ ...filter, status: 'delivered' }),
     Driver.countDocuments({ isAvailable: true }),
   ]);
   return { totalOrders, delivered, pending: totalOrders - delivered, availableDrivers: drivers };
 };
 
-const getOrdersByStatus = () => Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]);
+const getOrdersByStatus = (user) => {
+  const filter = getFilter(user);
+  return Order.aggregate([{ $match: filter }, { $group: { _id: '$status', count: { $sum: 1 } } }]);
+};
 
-const getOrdersAnalytics = async () => {
+const getOrdersAnalytics = async (user) => {
+  const filter = getFilter(user);
   const [total, byStatus] = await Promise.all([
-    Order.countDocuments(),
-    Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+    Order.countDocuments(filter),
+    Order.aggregate([{ $match: filter }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
   ]);
   return { total, byStatus };
 };
 
-const getSlaAnalytics = async () => {
-  const delivered = await Order.countDocuments({ status: 'delivered' });
-  const total = await Order.countDocuments();
+const getSlaAnalytics = async (user) => {
+  const filter = getFilter(user);
+  const delivered = await Order.countDocuments({ ...filter, status: 'delivered' });
+  const total = await Order.countDocuments(filter);
   const slaRate = total > 0 ? ((delivered / total) * 100).toFixed(2) : 0;
   return { delivered, total, slaRate: `${slaRate}%` };
 };
