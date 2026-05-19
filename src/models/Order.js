@@ -13,6 +13,11 @@ const orderSchema = new mongoose.Schema({
   passengerCount: { type: Number },
   slaDeadline: { type: Date },
   deliveryOtp: { type: String },
+  orderType: { type: String, enum: ['airline', 'customer'], default: 'airline' },
+  customerName: { type: String },
+  customerPhone: { type: String },
+  deliveryLocation: { type: String },
+  deliveryInstructions: { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

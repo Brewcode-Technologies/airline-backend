@@ -8,9 +8,9 @@ const register = async ({ name, email, password, role }, requestingUser) => {
   if (!password) throw Object.assign(new Error('Password is required'), { statusCode: 400 });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw Object.assign(new Error('Invalid email format'), { statusCode: 400 });
   if (password.length < 6) throw Object.assign(new Error('Password must be at least 6 characters'), { statusCode: 400 });
-  const validRoles = ['admin', 'airline', 'driver', 'vendor'];
+  const validRoles = ['admin', 'airline', 'driver', 'vendor', 'customer'];
   if (role && !validRoles.includes(role)) throw Object.assign(new Error('Invalid role'), { statusCode: 400 });
-  // Only admin can create any account (driver, airline, vendor, or another admin)
+  // Customers can self-register; all other roles require admin
   if (['driver', 'airline', 'vendor', 'admin'].includes(role) && requestingUser?.role !== 'admin')
     throw Object.assign(new Error('Account creation is restricted to admins only'), { statusCode: 403 });
   const existing = await User.findOne({ email });

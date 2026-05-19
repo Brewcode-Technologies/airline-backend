@@ -10,6 +10,8 @@ const Driver = require('./src/models/Driver');
 const Location = require('./src/models/Location');
 const DeliveryProof = require('./src/models/DeliveryProof');
 const Theme = require('./src/models/Theme');
+const Cart = require('./src/models/Cart');
+const Feedback = require('./src/models/Feedback');
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGO_URI);
@@ -25,6 +27,8 @@ const seed = async () => {
     Location.deleteMany({}),
     DeliveryProof.deleteMany({}),
     Theme.deleteMany({}),
+    Cart.deleteMany({}),
+    Feedback.deleteMany({}),
   ]);
   console.log('Cleared all collections');
 
@@ -275,24 +279,86 @@ const seed = async () => {
   });
   console.log(`✅ Theme seeded`);
 
+  // ─── 9. CUSTOMER USERS ──────────────────────────────────────
+  const customerUsers = await User.insertMany([
+    { name: 'John Passenger',   email: 'customer1@test.com', password: hashedPassword, role: 'customer', phone: '+1-555-0101', gate: 'Gate A2', seatNumber: '14B', airport: 'JFK' },
+    { name: 'Sarah Traveler',   email: 'customer2@test.com', password: hashedPassword, role: 'customer', phone: '+1-555-0102', gate: 'Gate B5', seatNumber: '22A', airport: 'LAX' },
+    { name: 'Mike Flyer',       email: 'customer3@test.com', password: hashedPassword, role: 'customer', phone: '+1-555-0103', gate: 'Gate C3', seatNumber: '8F', airport: 'ORD' },
+  ]);
+  console.log(`✅ Customer users seeded: ${customerUsers.length}`);
+
+  // ─── 10. CUSTOMER ORDERS ────────────────────────────────────
+  const customerOrders = await Order.insertMany([
+    {
+      orderNumber: 'CUST-2025-0001',
+      createdBy: customerUsers[0]._id,
+      items: [{ sku: skus[3]._id, quantity: 2 }, { sku: skus[6]._id, quantity: 1 }],
+      status: 'delivered',
+      orderType: 'customer',
+      customerName: 'John Passenger',
+      customerPhone: '+1-555-0101',
+      deliveryLocation: 'Gate A2, Seat 14B',
+      deliveryInstructions: 'Please deliver to seat directly',
+      slaDeadline: new Date('2025-07-10T14:22:00Z'),
+      driver: drivers[0]._id,
+    },
+    {
+      orderNumber: 'CUST-2025-0002',
+      createdBy: customerUsers[0]._id,
+      items: [{ sku: skus[0]._id, quantity: 1 }, { sku: skus[4]._id, quantity: 2 }],
+      status: 'enroute',
+      orderType: 'customer',
+      customerName: 'John Passenger',
+      customerPhone: '+1-555-0101',
+      deliveryLocation: 'Gate A2, Seat 14B',
+      deliveryInstructions: '',
+      slaDeadline: new Date(now.getTime() + 12 * 60 * 1000),
+      driver: drivers[1]._id,
+    },
+    {
+      orderNumber: 'CUST-2025-0003',
+      createdBy: customerUsers[1]._id,
+      items: [{ sku: skus[7]._id, quantity: 3 }, { sku: skus[5]._id, quantity: 1 }],
+      status: 'pending',
+      orderType: 'customer',
+      customerName: 'Sarah Traveler',
+      customerPhone: '+1-555-0102',
+      deliveryLocation: 'Gate B5, Seat 22A',
+      deliveryInstructions: 'Near window seat',
+      slaDeadline: new Date(now.getTime() + 22 * 60 * 1000),
+    },
+  ]);
+  console.log(`✅ Customer orders seeded: ${customerOrders.length}`);
+
+  // ─── 11. CUSTOMER FEEDBACK ──────────────────────────────────
+  const feedbacks = await Feedback.insertMany([
+    { order: customerOrders[0]._id, customer: customerUsers[0]._id, rating: 5, comment: 'Super fast delivery! Got my water and snacks in 15 minutes.' },
+  ]);
+  console.log(`✅ Customer feedback seeded: ${feedbacks.length}`);
+
   // ─── SUMMARY ────────────────────────────────────────────────
   console.log('\n========== SEED SUMMARY ==========');
-  console.log(`👤 Users          : ${users.length}`);
+  console.log(`👤 Users          : ${users.length + 3 + customerUsers.length}`);
   console.log(`🏢 Vendors        : ${vendors.length}`);
   console.log(`📦 SKUs           : ${skus.length}`);
   console.log(`🚗 Drivers        : ${drivers.length}`);
-  console.log(`📋 Orders         : ${orders.length}`);
+  console.log(`📋 Orders         : ${orders.length + customerOrders.length}`);
   console.log(`📍 Locations      : ${locations.length}`);
   console.log(`✅ Delivery Proofs: ${proofs.length}`);
   console.log(`🎨 Theme          : 1`);
+  console.log(`🛒 Customer Users : ${customerUsers.length}`);
+  console.log(`⭐ Feedback       : ${feedbacks.length}`);
   console.log('==================================');
   console.log('\n🔑 Login credentials (all passwords: password123)');
-  console.log('   Admin   : admin@airline.com');
-  console.log('   Airline : manager@airline.com');
-  console.log('   Driver  : james@driver.com');
-  console.log('   Vendor  : vendor1@indigo.com');
-  console.log('   Vendor  : vendor2@airindia.com');
-  console.log('   Vendor  : vendor3@spicejet.com');
+  console.log('   Admin    : admin@airline.com');
+  console.log('   Airline  : manager@airline.com');
+  console.log('   Driver   : james@driver.com');
+  console.log('   Vendor   : vendor1@indigo.com');
+  console.log('   Vendor   : vendor2@airindia.com');
+  console.log('   Vendor   : vendor3@spicejet.com');
+  console.log('   Customer : customer1@test.com');
+  console.log('   Customer : customer2@test.com');
+  console.log('   Customer : customer3@test.com');
 
   await mongoose.disconnect();
   console.log('\n✅ Seeding complete!');

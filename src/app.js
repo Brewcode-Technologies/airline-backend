@@ -23,6 +23,7 @@ app.use('/api/proof', require('./modules/proof/proof.routes'));
 app.use('/api/analytics', require('./modules/analytics/analytics.routes'));
 app.use('/api/theme', require('./modules/theme/theme.routes'));
 app.use('/api/coupa', require('./modules/coupa/coupa.routes'));
+app.use('/api/customer', require('./modules/customer/customer.routes'));
 
 app.use(errorMiddleware);
 
