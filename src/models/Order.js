@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema({
   driver: { type: mongoose.Schema.Types.ObjectId, ref: 'Driver' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   items: [{ sku: { type: mongoose.Schema.Types.ObjectId, ref: 'SKU' }, quantity: Number }],
+  services: [{ service: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' }, quantity: { type: Number, default: 1 } }],
   status: { type: String, enum: ['pending', 'assigned', 'picked', 'enroute', 'in_transit', 'delivered', 'cancelled'], default: 'pending' },
   scheduledAt: { type: Date },
   flightNumber: { type: String },

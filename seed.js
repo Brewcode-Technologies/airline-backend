@@ -12,6 +12,7 @@ const DeliveryProof = require('./src/models/DeliveryProof');
 const Theme = require('./src/models/Theme');
 const Cart = require('./src/models/Cart');
 const Feedback = require('./src/models/Feedback');
+const Service = require('./src/models/Service');
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGO_URI);
@@ -29,6 +30,7 @@ const seed = async () => {
     Theme.deleteMany({}),
     Cart.deleteMany({}),
     Feedback.deleteMany({}),
+    Service.deleteMany({}),
   ]);
   console.log('Cleared all collections');
 
@@ -80,7 +82,7 @@ const seed = async () => {
     { code: 'SKU-SNACK-008',      name: 'Cookies Assorted 100g',     description: 'Assorted cookies pack',                  category: 'Snacks', vendor: vendors[1]._id, unit: 'pack',   isActive: true, price: 5, stock: 200, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=400&fit=crop' },
     { code: 'SKU-SNACK-009',      name: 'Protein Bar 60g',           description: 'High protein energy bar',                category: 'Snacks', vendor: vendors[0]._id, unit: 'bar',    isActive: true, price: 4, stock: 180, image: 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?w=400&h=400&fit=crop' },
     // Cargo
-    { code: 'SKU-CARGO-010',      name: 'Cargo Box Small',           description: 'Small cargo box 30x20x15 cm',           category: 'Cargo', vendor: vendors[2]._id, unit: 'piece',  isActive: true, price: 8, stock: 100, image: 'https://images.unsplash.com/photo-1607166452427-7e4477c3a3d0?w=400&h=400&fit=crop' },
+    { code: 'SKU-CARGO-010',      name: 'Cargo Box Small',           description: 'Small cargo box 30x20x15 cm',           category: 'Cargo', vendor: vendors[2]._id, unit: 'piece',  isActive: true, price: 8, stock: 100, image: 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=400&h=400&fit=crop' },
     { code: 'SKU-CARGO-011',      name: 'Cargo Box Large',           description: 'Large cargo box 60x40x30 cm',           category: 'Cargo', vendor: vendors[2]._id, unit: 'piece',  isActive: true, price: 14, stock: 75, image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop' },
     // Fuel
     { code: 'SKU-FUEL-012',       name: 'Jet Fuel ATF',              description: 'Aviation turbine fuel per litre',        category: 'Fuel', vendor: vendors[3]._id, unit: 'litre',  isActive: true, price: 3, stock: 10000, image: 'https://images.unsplash.com/photo-1545262810-77515befe149?w=400&h=400&fit=crop' },
@@ -90,20 +92,20 @@ const seed = async () => {
     { code: 'SKU-SUPPLY-015',     name: 'Crew Uniform Set',          description: 'Full crew uniform set (shirt+trouser)',  category: 'Supplies', vendor: vendors[4]._id, unit: 'set',    isActive: false, price: 85, stock: 20, image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop' },
     // Comfort
     { code: 'SKU-COMF-016',       name: 'Travel Blanket',            description: 'Soft fleece blanket for passengers',     category: 'Comfort', vendor: vendors[0]._id, unit: 'piece',  isActive: true, price: 18, stock: 80, image: 'https://images.unsplash.com/photo-1580301762395-21ce84d00bc6?w=400&h=400&fit=crop' },
-    { code: 'SKU-COMF-017',       name: 'Neck Pillow',               description: 'Memory foam travel neck pillow',         category: 'Comfort', vendor: vendors[0]._id, unit: 'piece',  isActive: true, price: 12, stock: 100, image: 'https://images.unsplash.com/photo-1592789705501-f9ae4278a9e9?w=400&h=400&fit=crop' },
+    { code: 'SKU-COMF-017',       name: 'Neck Pillow',               description: 'Memory foam travel neck pillow',         category: 'Comfort', vendor: vendors[0]._id, unit: 'piece',  isActive: true, price: 12, stock: 100, image: 'https://images.unsplash.com/photo-1520923179278-50c68e063a78?w=400&h=400&fit=crop' },
     { code: 'SKU-COMF-018',       name: 'Eye Mask & Earplugs Set',   description: 'Sleep kit with eye mask and earplugs',   category: 'Comfort', vendor: vendors[1]._id, unit: 'set',    isActive: true, price: 6, stock: 200, image: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=400&h=400&fit=crop' },
     // Safety
-    { code: 'SKU-SAFE-019',       name: 'Safety Vest High-Vis',      description: 'High visibility safety vest',            category: 'Safety', vendor: vendors[4]._id, unit: 'piece',  isActive: true, price: 22, stock: 60, image: 'https://images.unsplash.com/photo-1618090583706-2a3e4e2d5e8e?w=400&h=400&fit=crop' },
+    { code: 'SKU-SAFE-019',       name: 'Safety Vest High-Vis',      description: 'High visibility safety vest',            category: 'Safety', vendor: vendors[4]._id, unit: 'piece',  isActive: true, price: 22, stock: 60, image: 'https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=400&h=400&fit=crop' },
     { code: 'SKU-SAFE-020',       name: 'First Aid Kit',             description: 'Compact emergency first aid kit',        category: 'Safety', vendor: vendors[2]._id, unit: 'kit',    isActive: true, price: 35, stock: 40, image: 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?w=400&h=400&fit=crop' },
-    { code: 'SKU-SAFE-021',       name: 'Fire Extinguisher Mini',    description: 'Portable mini fire extinguisher',        category: 'Safety', vendor: vendors[2]._id, unit: 'piece',  isActive: true, price: 55, stock: 25, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop' },
+    { code: 'SKU-SAFE-021',       name: 'Fire Extinguisher Mini',    description: 'Portable mini fire extinguisher',        category: 'Safety', vendor: vendors[2]._id, unit: 'piece',  isActive: true, price: 55, stock: 25, image: 'https://images.unsplash.com/photo-1585003791031-a6bcc0e8e3a0?w=400&h=400&fit=crop' },
     // Hygiene
     { code: 'SKU-HYG-022',        name: 'Hand Sanitizer 100ml',      description: 'Antibacterial hand sanitizer gel',       category: 'Hygiene', vendor: vendors[1]._id, unit: 'bottle', isActive: true, price: 4, stock: 350, image: 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?w=400&h=400&fit=crop' },
     { code: 'SKU-HYG-023',        name: 'Wet Wipes Pack (50)',       description: 'Antibacterial wet wipes pack',           category: 'Hygiene', vendor: vendors[1]._id, unit: 'pack',   isActive: true, price: 5, stock: 280, image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=400&h=400&fit=crop' },
     { code: 'SKU-HYG-024',        name: 'Face Mask Box (50)',        description: 'Disposable 3-ply face masks',            category: 'Hygiene', vendor: vendors[2]._id, unit: 'box',    isActive: true, price: 12, stock: 150, image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?w=400&h=400&fit=crop' },
     // Electronics
-    { code: 'SKU-ELEC-025',       name: 'USB-C Charging Cable',      description: 'Universal USB-C charging cable 1m',      category: 'Electronics', vendor: vendors[3]._id, unit: 'piece',  isActive: true, price: 8, stock: 120, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop' },
+    { code: 'SKU-ELEC-025',       name: 'USB-C Charging Cable',      description: 'Universal USB-C charging cable 1m',      category: 'Electronics', vendor: vendors[3]._id, unit: 'piece',  isActive: true, price: 8, stock: 120, image: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400&h=400&fit=crop' },
     { code: 'SKU-ELEC-026',       name: 'Power Bank 10000mAh',       description: 'Portable power bank for passengers',     category: 'Electronics', vendor: vendors[3]._id, unit: 'piece',  isActive: true, price: 25, stock: 50, image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&h=400&fit=crop' },
-    { code: 'SKU-ELEC-027',       name: 'Noise Cancelling Earbuds',  description: 'Wireless ANC earbuds for passengers',    category: 'Electronics', vendor: vendors[4]._id, unit: 'piece',  isActive: true, price: 45, stock: 35, image: 'https://images.unsplash.com/photo-1590658268037-6bf12f8e4d12?w=400&h=400&fit=crop' },
+    { code: 'SKU-ELEC-027',       name: 'Noise Cancelling Earbuds',  description: 'Wireless ANC earbuds for passengers',    category: 'Electronics', vendor: vendors[4]._id, unit: 'piece',  isActive: true, price: 45, stock: 35, image: 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400&h=400&fit=crop' },
   ]);
   console.log(`✅ SKUs seeded: ${skus.length}`);
 
@@ -336,6 +338,26 @@ const seed = async () => {
   ]);
   console.log(`✅ Customer feedback seeded: ${feedbacks.length}`);
 
+  // ─── 12. SERVICES ──────────────────────────────────────────
+  const services = await Service.insertMany([
+    { code: 'SVC-WHEELCHAIR-001', name: 'Wheelchair Assistance', description: 'Door-to-gate wheelchair assistance with a dedicated attendant. Available for elderly, injured, or mobility-impaired passengers.', category: 'Mobility', price: 15, duration: 'Per trip', icon: '♿', rating: 4.8, reviewCount: 124, isActive: true, image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=400&fit=crop' },
+    { code: 'SVC-LUGGAGE-002', name: 'Luggage Handling', description: 'Professional porter service to carry and manage your luggage from check-in to gate or gate to pickup area.', category: 'Baggage', price: 12, duration: 'Per trip', icon: '🧳', rating: 4.6, reviewCount: 89, isActive: true, image: 'https://images.unsplash.com/photo-1565026057447-bc90a3dceb87?w=400&h=400&fit=crop' },
+    { code: 'SVC-LOUNGE-003', name: 'Lounge Access', description: 'Premium airport lounge access with complimentary food, drinks, Wi-Fi, and comfortable seating. Valid for 3 hours.', category: 'Comfort', price: 45, duration: '3 hours', icon: '🛋️', rating: 4.9, reviewCount: 256, isActive: true, image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=400&h=400&fit=crop' },
+    { code: 'SVC-PRIORITY-004', name: 'Priority Boarding Assistance', description: 'Skip the queue with priority boarding assistance. An attendant will guide you through fast-track security and boarding.', category: 'Priority', price: 25, duration: 'Per boarding', icon: '⚡', rating: 4.7, reviewCount: 178, isActive: true, image: 'https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=400&h=400&fit=crop' },
+    { code: 'SVC-PORTER-005', name: 'Porter Service', description: 'Personal porter to assist with bags, navigation through the terminal, and finding your gate. Ideal for first-time travelers.', category: 'Baggage', price: 18, duration: 'Per trip', icon: '🧑‍✈️', rating: 4.5, reviewCount: 67, isActive: true, image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=400&fit=crop' },
+    { code: 'SVC-WIFI-006', name: 'Wi-Fi Pass', description: 'High-speed airport Wi-Fi pass. Unlimited data for streaming, video calls, and browsing throughout the terminal.', category: 'Connectivity', price: 8, duration: '24 hours', icon: '📶', rating: 4.3, reviewCount: 312, isActive: true, image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=400&fit=crop' },
+    { code: 'SVC-FASTTRACK-007', name: 'Fast Track Security', description: 'Express lane through airport security. Skip long queues and get to your gate faster with dedicated fast-track access.', category: 'Priority', price: 20, duration: 'One-time', icon: '🚀', rating: 4.8, reviewCount: 203, isActive: true, image: 'https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=400&h=400&fit=crop' },
+    { code: 'SVC-CHILDCARE-008', name: 'Child Escort Service', description: 'Dedicated attendant to accompany unaccompanied minors from check-in through boarding. Includes entertainment and snacks.', category: 'Family', price: 35, duration: 'Per trip', icon: '👶', rating: 4.9, reviewCount: 45, isActive: true, image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop' },
+    { code: 'SVC-MEETGREET-009', name: 'Meet & Greet', description: 'Personal assistant meets you at arrival and guides you through immigration, baggage claim, and to your transport.', category: 'Priority', price: 50, duration: 'Per arrival', icon: '🤝', rating: 4.7, reviewCount: 91, isActive: true, image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=400&fit=crop' },
+    { code: 'SVC-SLEEPING-010', name: 'Sleeping Pod', description: 'Private sleeping pod with bed, blanket, and alarm service. Perfect for long layovers. Includes noise-cancelling environment.', category: 'Comfort', price: 30, duration: '2 hours', icon: '😴', rating: 4.6, reviewCount: 134, isActive: true, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=400&fit=crop' },
+    { code: 'SVC-SHOWER-011', name: 'Shower Facility', description: 'Private shower room with fresh towels, toiletries, and grooming essentials. Refresh yourself between flights.', category: 'Comfort', price: 15, duration: '30 min', icon: '🚿', rating: 4.4, reviewCount: 78, isActive: true, image: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=400&fit=crop' },
+    { code: 'SVC-BUGGY-012', name: 'Electric Buggy Transfer', description: 'Electric buggy ride between terminals or to distant gates. Comfortable and fast inter-terminal transport.', category: 'Mobility', price: 10, duration: 'Per ride', icon: '🚗', rating: 4.5, reviewCount: 156, isActive: true, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&h=400&fit=crop' },
+    { code: 'SVC-PETCARE-013', name: 'Pet Care Lounge', description: 'Dedicated pet care area with water, treats, and a comfortable resting space for your furry travel companion.', category: 'Family', price: 20, duration: '2 hours', icon: '🐾', rating: 4.7, reviewCount: 34, isActive: true, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop' },
+    { code: 'SVC-MEDICAL-014', name: 'Medical Assistance', description: 'On-call medical support including basic health check, first aid, and medication assistance at the airport.', category: 'Health', price: 40, duration: 'Per consultation', icon: '🏥', rating: 4.9, reviewCount: 22, isActive: true, image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=400&fit=crop' },
+    { code: 'SVC-WRAPPING-015', name: 'Luggage Wrapping', description: 'Protective plastic wrapping for your luggage to prevent damage, tampering, and weather exposure during transit.', category: 'Baggage', price: 8, duration: 'Per bag', icon: '📦', rating: 4.2, reviewCount: 198, isActive: true, image: 'https://images.unsplash.com/photo-1553531384-cc64ac80f931?w=400&h=400&fit=crop' },
+  ]);
+  console.log(`✅ Services seeded: ${services.length}`);
+
   // ─── SUMMARY ────────────────────────────────────────────────
   console.log('\n========== SEED SUMMARY ==========');
   console.log(`👤 Users          : ${users.length + 3 + customerUsers.length}`);
@@ -348,6 +370,7 @@ const seed = async () => {
   console.log(`🎨 Theme          : 1`);
   console.log(`🛒 Customer Users : ${customerUsers.length}`);
   console.log(`⭐ Feedback       : ${feedbacks.length}`);
+  console.log(`🛎️  Services       : ${services.length}`);
   console.log('==================================');
   console.log('\n🔑 Login credentials (all passwords: password123)');
   console.log('   Admin    : admin@airline.com');

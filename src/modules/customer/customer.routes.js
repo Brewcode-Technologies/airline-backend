@@ -8,16 +8,26 @@ router.get('/catalog', controller.getCatalog);
 router.get('/catalog/:id', controller.getCatalogItem);
 router.get('/categories', controller.getCategories);
 
+// Public service endpoints
+router.get('/services', controller.getServices);
+router.get('/services/categories', controller.getServiceCategories);
+router.get('/services/:id', controller.getServiceItem);
+
 // Protected customer endpoints
 router.use(authMiddleware);
 router.use(roleMiddleware('customer'));
 
-// Cart
+// Cart - Products
 router.get('/cart', controller.getCart);
 router.post('/cart/add', controller.addToCart);
 router.put('/cart/update', controller.updateCartItem);
 router.delete('/cart/remove/:skuId', controller.removeFromCart);
 router.delete('/cart/clear', controller.clearCart);
+
+// Cart - Services
+router.post('/cart/add-service', controller.addServiceToCart);
+router.put('/cart/update-service', controller.updateCartService);
+router.delete('/cart/remove-service/:serviceId', controller.removeServiceFromCart);
 
 // Orders
 router.post('/orders', controller.placeOrder);
